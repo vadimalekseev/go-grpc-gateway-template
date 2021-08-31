@@ -3,11 +3,13 @@ package bijection
 const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789"
 const base = len(alphabet)
 
-func Encode(numberToEncode int) (encodedString string){
-	if numberToEncode == 0 {	return string(alphabet[0])	}
+func Encode(numberToEncode int) (encodedString string) {
+	if numberToEncode == 0 {
+		return string(alphabet[0])
+	}
 
 	for numberToEncode > 0 {
-		encodedString = encodedString + string(alphabet[numberToEncode % base])
+		encodedString = encodedString + string(alphabet[numberToEncode%base])
 		numberToEncode = numberToEncode / base
 	}
 
