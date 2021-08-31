@@ -26,11 +26,11 @@ buf-build:
 download-swagger:
 	$(info Downloading swagger-ui)
 	tmp=$$(mktemp -d) && \
-		git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
-	 	sed -i '' "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
-		mkdir -p $(THIRD_PARTY_FOLDER)/swagger-ui && \
-	 	mv $$tmp/dist/* $(THIRD_PARTY_FOLDER)/swagger-ui && \
-	 	rm -rf $$tmp
+	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
+	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
+	mkdir -p $(THIRD_PARTY_FOLDER)/swagger-ui && \
+	mv $$tmp/dist/* $(THIRD_PARTY_FOLDER)/swagger-ui && \
+	rm -rf $$tmp
 
 .PHONY: generate
 generate: buf-build download-swagger
@@ -38,4 +38,4 @@ generate: buf-build download-swagger
 
 .PHONY: build
 build: download-swagger
-	go build -o $$GOBIN/sinkapi
+	go build -o $$GOBIN/sinkapi cmd/sinkapi/main.go
