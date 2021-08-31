@@ -1,6 +1,8 @@
 # Additional
 bin/
 third_party/
+# IDE
+*.idea
 
 # Default
 # Binaries for programs and plugins
