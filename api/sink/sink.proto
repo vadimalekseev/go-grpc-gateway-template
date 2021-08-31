@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package github.go_sink.sink;
+
+option go_package = "github.com/go-api/api/pkg/api";
+
+import "google/api/annotations.proto";
+
+service Sink {
+  rpc Sink(SinkRequest) returns (SinkResponse) {
+    option (google.api.http) = {
+      post: "/sink"
+      body: "*"
+    };
+  }
+
+  rpc Unsink(UnsinkRequest) returns (UnsinkResponse) {
+    option (google.api.http) = {
+      post: "/unsink"
+      body: "*"
+    };
+  }
+}
+
+message SinkRequest {
+  string url = 1;
+  // the number of accesses to the link.
+  int64 access_count = 2;
+}
+
+message SinkResponse {
+  string url = 1;
+}
+
+message UnsinkRequest {
+  string url = 1;
+}
+
+message UnsinkResponse {
+  string url = 1;
+}
