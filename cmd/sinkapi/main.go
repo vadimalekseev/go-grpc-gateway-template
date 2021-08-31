@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"flag"
+	"io/fs"
 	"mime"
 	"net/http"
 
@@ -29,9 +30,13 @@ func serveSwaggerUI(mux *http.ServeMux) error {
 		return err
 	}
 
-	// Expose files in third_party/swagger-ui/ on <host>/swagger-ui
-	fileServer := http.FileServer(http.FS(sink.SwaggerUI))
-	mux.Handle("/third_party/swagger-ui/", fileServer)
+	// Expose files on <host>/docs
+	swaggerUIFS, err := fs.Sub(sink.SwaggerUI, sink.SwaggerUIPath)
+	if err != nil {
+		return err
+	}
+
+	mux.Handle(swaggerUIPrefix, http.StripPrefix(swaggerUIPrefix, http.FileServer(http.FS(swaggerUIFS))))
 
 	return nil
 }
