@@ -2,7 +2,7 @@
 bin/
 third_party/
 # IDE
-*.idea
+.idea/
 
 # Default
 # Binaries for programs and plugins
