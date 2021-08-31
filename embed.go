@@ -13,4 +13,4 @@ var SwaggerUI embed.FS
 
 // SinkSwaggerJSON embedded sink.swagger.json from sink.proto
 //go:embed pkg/api/sink/sink.swagger.json
-var SinkSwaggerJSON string
+var SinkSwaggerJSON []byte
