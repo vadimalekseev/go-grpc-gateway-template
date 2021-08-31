@@ -37,5 +37,5 @@ generate: buf-build download-swagger
 	"$(LOCAL_BIN)/buf" generate
 
 .PHONY: build
-build: generate
+build: download-swagger
 	go build -o $$GOBIN/sinkapi
