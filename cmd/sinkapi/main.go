@@ -4,6 +4,8 @@ import (
 	"context"
 	_ "embed"
 	"flag"
+	"io/fs"
+	"log"
 	"mime"
 	"net/http"
 
@@ -24,19 +26,28 @@ var (
 
 const swaggerUIPrefix = "/docs/"
 
-func serveSwaggerUI(mux *http.ServeMux) error {
+func enableSwaggerSupport(mux *http.ServeMux) error {
 	if err := mime.AddExtensionType(".svg", "image/svg+xml"); err != nil {
 		return err
 	}
 
-	// Expose files in third_party/swagger-ui/ on <host>/swagger-ui
-	fileServer := http.FileServer(http.FS(sink.SwaggerUI))
-	mux.Handle("/third_party/swagger-ui/", fileServer)
+	// Expose files on <host>/docs
+	swaggerUIFS, err := fs.Sub(sink.SwaggerUI, sink.SwaggerUIPath)
+	if err != nil {
+		return err
+	}
+
+	mux.HandleFunc("/swagger.json", func(w http.ResponseWriter, _ *http.Request) {
+		if _, err = w.Write(sink.SinkSwaggerJSON); err != nil {
+			log.Printf("error writing swagger.json file: %v", err)
+		}
+	})
+	mux.Handle(swaggerUIPrefix, http.StripPrefix(swaggerUIPrefix, http.FileServer(http.FS(swaggerUIFS))))
 
 	return nil
 }
 
-func serveGRPC(ctx context.Context, mux *http.ServeMux) error {
+func enableGRPCSupport(ctx context.Context, mux *http.ServeMux) error {
 	// TODO: Make sure the gRPC server is running properly and accessible
 	gatewayMux := runtime.NewServeMux()
 
@@ -51,15 +62,15 @@ func serveGRPC(ctx context.Context, mux *http.ServeMux) error {
 }
 
 func run() error {
-	_, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	mux := http.NewServeMux()
 
-	//if err := serveGRPC(ctx, mux); err != nil {
-	//	return err
-	//}
-	if err := serveSwaggerUI(mux); err != nil {
+	if err := enableGRPCSupport(ctx, mux); err != nil {
+		return err
+	}
+	if err := enableSwaggerSupport(mux); err != nil {
 		return err
 	}
 

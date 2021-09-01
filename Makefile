@@ -1,10 +1,12 @@
 LOCAL_BIN := $(CURDIR)/bin
 THIRD_PARTY_FOLDER := $(CURDIR)/third_party
+SWAGGER_URL := /swagger.json
 
 export GOBIN=$(LOCAL_BIN)
 
 .PHONY: .install-protoc-deps
 .install-protoc-deps:
+	$(info Downloading protoc plugins)
 	go mod tidy
 	go install \
     github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
@@ -24,14 +26,16 @@ buf-build:
 download-swagger:
 	$(info Downloading swagger-ui)
 	tmp=$$(mktemp -d) && \
-		git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
-		mkdir -p $(THIRD_PARTY_FOLDER)/swagger-ui && \
-	 	mv $$tmp/dist/* $(THIRD_PARTY_FOLDER)/swagger-ui && rm -rf $$tmp
+	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
+	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
+	mkdir -p $(THIRD_PARTY_FOLDER)/swagger-ui && \
+	mv $$tmp/dist/* $(THIRD_PARTY_FOLDER)/swagger-ui && \
+	rm -rf $$tmp
 
 .PHONY: generate
 generate: buf-build download-swagger
 	"$(LOCAL_BIN)/buf" generate
 
 .PHONY: build
-build: generate
-	go build -o $$GOBIN/sinkapi
+build: download-swagger
+	go build -o $$GOBIN/sinkapi cmd/sinkapi/main.go
