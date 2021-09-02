@@ -12,6 +12,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"github.com/go-sink/sink"
 	gw "github.com/go-sink/sink/pkg/api/sink"
@@ -56,15 +57,16 @@ func (s *sinktest) Sink(_ context.Context, req *gw.SinkRequest) (*gw.SinkRespons
 }
 
 func serveGRPC(mux *http.ServeMux) error {
-	lis, err := net.Listen("tcp", ":5555")
+	lis, err := net.Listen("tcp", *grpcAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	serveMux := runtime.NewServeMux()
 	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
 	gw.RegisterSinkServer(grpcServer, &sinktest{})
-	err = gw.RegisterSinkHandlerFromEndpoint(context.TODO(), serveMux, ":5555", []grpc.DialOption{grpc.WithInsecure()})
+	err = gw.RegisterSinkHandlerFromEndpoint(context.TODO(), serveMux, *grpcAddr, []grpc.DialOption{grpc.WithInsecure()})
 	if err != nil {
 		return err
 	}
