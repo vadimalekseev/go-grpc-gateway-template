@@ -7,13 +7,13 @@ import (
 	"io/fs"
 	"log"
 	"mime"
+	"net"
 	"net/http"
 
-	"github.com/go-sink/sink"
-	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 
+	"github.com/go-sink/sink"
 	gw "github.com/go-sink/sink/pkg/api/sink"
 )
 
@@ -26,7 +26,7 @@ var (
 
 const swaggerUIPrefix = "/docs/"
 
-func enableSwaggerSupport(mux *http.ServeMux) error {
+func serveSwaggerUI(mux *http.ServeMux) error {
 	if err := mime.AddExtensionType(".svg", "image/svg+xml"); err != nil {
 		return err
 	}
@@ -47,30 +47,48 @@ func enableSwaggerSupport(mux *http.ServeMux) error {
 	return nil
 }
 
-func enableGRPCSupport(ctx context.Context, mux *http.ServeMux) error {
-	// TODO: Make sure the gRPC server is running properly and accessible
-	gatewayMux := runtime.NewServeMux()
+type sinktest struct {
+	gw.UnimplementedSinkServer
+}
 
-	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := gw.RegisterSinkHandlerFromEndpoint(ctx, gatewayMux, *grpcAddr, opts)
+func (s *sinktest) Sink(_ context.Context, req *gw.SinkRequest) (*gw.SinkResponse, error){
+	return &gw.SinkResponse{Url: req.Url}, nil
+}
+
+func serveGRPC(mux *http.ServeMux) error {
+	lis, err := net.Listen("tcp", ":5555")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	serveMux := runtime.NewServeMux()
+	grpcServer := grpc.NewServer()
+	gw.RegisterSinkServer(grpcServer, &sinktest{})
+	err = gw.RegisterSinkHandlerFromEndpoint(context.TODO(), serveMux, ":5555", []grpc.DialOption{grpc.WithInsecure()})
 	if err != nil {
 		return err
 	}
+	mux.Handle("/", serveMux)
 
-	mux.Handle("/", gatewayMux)
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func run() error {
-	ctx, cancel := context.WithCancel(context.Background())
+	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	mux := http.NewServeMux()
+	go func(mux *http.ServeMux) {
+		if err := serveGRPC(mux); err != nil {
+			log.Fatalln(err)
+		}
+	}(mux)
 
-	if err := enableGRPCSupport(ctx, mux); err != nil {
-		return err
-	}
-	if err := enableSwaggerSupport(mux); err != nil {
+	if err := serveSwaggerUI(mux); err != nil {
 		return err
 	}
 
@@ -78,11 +96,12 @@ func run() error {
 	return http.ListenAndServe(*httpAddr, mux)
 }
 
+
+
 func main() {
 	flag.Parse()
-	defer glog.Flush()
 
 	if err := run(); err != nil {
-		glog.Fatal(err)
+		log.Fatalln(err)
 	}
 }
