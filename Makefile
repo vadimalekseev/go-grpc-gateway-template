@@ -34,7 +34,7 @@ download-swagger:
 
 .PHONY: generate
 generate: buf-build download-swagger
-	"$(LOCAL_BIN)/buf" generate
+	PATH=$(LOCAL_BIN):$$PATH $(LOCAL_BIN)/buf generate
 
 .PHONY: build
 build: download-swagger
