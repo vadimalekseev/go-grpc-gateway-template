@@ -26,21 +26,22 @@ func TestRepository(t *testing.T) {
 		if err != nil {
 			t.Fatalf("couldnt write a link to a database: %v", err)
 		}
-
 	})
 
 	t.Run("it gets corresponding link", func(t *testing.T) {
-		want := datastruct.Link{Original: origTestValue, Shortened: shortTestValue}
+		want := datastruct.Link{ID: 5, Original: origTestValue, Shortened: shortTestValue}
 		encodedLink := shortTestValue
 
-		got := linkRepository.GetLink(encodedLink)
+		got, err := linkRepository.GetLink(encodedLink)
+		assert.Nil(t, err)
+
+		// because we don't know ID for sure
+		got.ID = 5
 
 		if got != want {
-			assert.Equal(t, got, want)
-			//t.Errorf("wrong link pair, got: %v, want: %v", got, want)
+			assert.Equal(t, want, got)
 		}
 	})
-
 }
 
 func setUpLinkRepository(t testing.TB) (linkRepository repository.Repository) {
