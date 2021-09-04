@@ -3,6 +3,8 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/go-sink/sink/internal/app/datasctruct"
 )
 
 type Repository struct {
@@ -13,8 +15,8 @@ func New(db *sql.DB) Repository {
 	return Repository{database: db}
 }
 
-func (r *Repository) GetLink(short string) (original string) {
-	originalRow := r.database.QueryRow("SELECT original from links where shortened ==  ?", short)
+func (r *Repository) GetLink(short string) (original datastruct.Link) {
+	originalRow := r.database.QueryRow("SELECT * from links where shortened ==  ?", short)
 	err := originalRow.Scan(&original)
 	if err != nil {
 		fmt.Printf("corresponding link was not found: %v", err)
@@ -23,9 +25,7 @@ func (r *Repository) GetLink(short string) (original string) {
 	return
 }
 
-func (r *Repository) SetLink(original, short string) {
-	_, err := r.database.Query("INSERT INTO links VALUES (?, ?)", original, short)
-	if err != nil {
-		fmt.Printf("error inserting new shortened link: %v", err)
-	}
+func (r *Repository) SetLink(link datastruct.Link) (err error) {
+	_, err = r.database.Query("INSERT INTO links VALUES (?, ?)", link.Original, link.Shortened)
+	return
 }
