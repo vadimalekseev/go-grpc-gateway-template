@@ -1,3 +1,6 @@
+# Confogurations
+*.hcl
+
 # Additional
 bin/
 third_party/

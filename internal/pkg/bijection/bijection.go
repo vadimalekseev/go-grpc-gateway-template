@@ -1,11 +1,12 @@
 package bijection
 
 import (
-	aux "github.com/go-sink/sink/internal/pkg"
 	"strings"
+
+	aux "github.com/go-sink/sink/internal/pkg"
 )
 
-const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789"
+const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNIPQRSTUVWXYZ0123456789"
 const base = len(alphabet)
 
 func Encode(toEncode int) (encoded string){
