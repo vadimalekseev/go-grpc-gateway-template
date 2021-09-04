@@ -1,4 +1,5 @@
-package repository_test
+// +build integration
+package repository
 
 import (
 	"database/sql"
@@ -10,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/go-sink/sink/internal/app/datastruct"
-	"github.com/go-sink/sink/internal/app/repository"
 )
 
 func TestRepository(t *testing.T) {
@@ -44,7 +44,7 @@ func TestRepository(t *testing.T) {
 	})
 }
 
-func setUpLinkRepository(t testing.TB) (linkRepository repository.Repository) {
+func setUpLinkRepository(t testing.TB) (linkRepository Repository) {
 	t.Helper()
 
 	DSN, ok := os.LookupEnv("TEST_DSN")
@@ -57,5 +57,5 @@ func setUpLinkRepository(t testing.TB) (linkRepository repository.Repository) {
 		t.Fatalf("could not establish db connection: %v", err)
 	}
 
-	return repository.New(conn)
+	return New(conn)
 }
