@@ -52,7 +52,7 @@ type sinktest struct {
 	gw.UnimplementedSinkServer
 }
 
-func (s *sinktest) Sink(_ context.Context, req *gw.SinkRequest) (*gw.SinkResponse, error){
+func (s *sinktest) Sink(_ context.Context, req *gw.SinkRequest) (*gw.SinkResponse, error) {
 	return &gw.SinkResponse{Url: req.Url}, nil
 }
 
@@ -97,8 +97,6 @@ func run() error {
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	return http.ListenAndServe(*httpAddr, mux)
 }
-
-
 
 func main() {
 	flag.Parse()

@@ -15,8 +15,14 @@ export GOBIN=$(LOCAL_BIN)
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
 	github.com/bufbuild/buf/cmd/buf
 
+.PHONY: .goose
+.goose:
+	$(info Downloading goose)
+	go mod tidy
+	go install github.com/pressly/goose/v3/cmd/goose
+
 .PHONY: bin-deps
-bin-deps: .install-protoc-deps
+bin-deps: .install-protoc-deps .goose
 
 .PHONY: buf-build
 buf-build:
@@ -38,4 +44,5 @@ generate: buf-build download-swagger
 
 .PHONY: build
 build: download-swagger
+	$(info Building sinkapi)
 	go build -o $$GOBIN/sinkapi cmd/sinkapi/main.go

@@ -1,10 +1,12 @@
-services:
-  image: postgres
-  restart: always
-  environment:
-    - POSTGRES_PASSWORD=postgres
-    - POSTGRES_USER=postgres
-    - POSTGRES_DB=go-sink-db
-  ports:
-    - 5432:5432
+version: "3.9"
 
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=go-sink
+    ports:
+      - 5432:5432

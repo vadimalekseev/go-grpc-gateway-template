@@ -1,8 +1,10 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE links (
-    id integer CONSTRAINT id_pk PRIMARY KEY,
-    original varchar NOT NULL,
+CREATE TABLE links
+(
+    id        integer
+        CONSTRAINT id_pk PRIMARY KEY,
+    original  varchar NOT NULL,
     shortened varchar NOT NULL
 );
 -- +goose StatementEnd

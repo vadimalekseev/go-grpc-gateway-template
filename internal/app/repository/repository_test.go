@@ -3,36 +3,24 @@ package repository_test
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"testing"
 
-	"github.com/hashicorp/hcl/v2/hclsimple"
-
 	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/assert"
 
-	datastruct "github.com/go-sink/sink/internal/app/datasctruct"
+	"github.com/go-sink/sink/internal/app/datastruct"
 	"github.com/go-sink/sink/internal/app/repository"
 )
 
-type Config struct {
-	DB Database `hcl:"database,block"`
-}
-
-type Database struct {
-	Host string `hcl:"host"`
-	Port int `hcl:"port"`
-	User string `hcl:"user"`
-	Password string `hcl:"password"`
-	Dbname string `hcl:"dbname"`
-}
-
-
-
-func TestRepository(t *testing.T){
+func TestRepository(t *testing.T) {
 	linkRepository := setUpLinkRepository(t)
 
+	const origTestValue = "orig"
+	const shortTestValue = "short"
 
 	t.Run("it writes a link to a database", func(t *testing.T) { //TODO: delete this
-		link := datastruct.NewLink("stubborn.fuk", "lmao.no")
+		link := datastruct.Link{Original: origTestValue, Shortened: shortTestValue}
 
 		err := linkRepository.SetLink(link)
 		if err != nil {
@@ -42,35 +30,31 @@ func TestRepository(t *testing.T){
 	})
 
 	t.Run("it gets corresponding link", func(t *testing.T) {
-		want := datastruct.NewLink("stubborn.fuk", "lmao.no")
-		encodedLink := "lmao.no"
+		want := datastruct.Link{Original: origTestValue, Shortened: shortTestValue}
+		encodedLink := shortTestValue
 
 		got := linkRepository.GetLink(encodedLink)
 
 		if got != want {
-			t.Errorf("wrong link pair, got: %v, want: %v", got, want)
+			assert.Equal(t, got, want)
+			//t.Errorf("wrong link pair, got: %v, want: %v", got, want)
 		}
 	})
 
 }
 
-func setUpLinkRepository(t testing.TB) (linkRepository repository.Repository){
+func setUpLinkRepository(t testing.TB) (linkRepository repository.Repository) {
 	t.Helper()
 
-	var config Config
-	err := hclsimple.DecodeFile("../../../config.hcl", nil, &config)
-	if err != nil {
-		t.Fatalf("Failed to load configuration: %s", err)
+	DSN, ok := os.LookupEnv("TEST_DSN")
+	if !ok {
+		fmt.Println("TEST_DSN environment variable is required")
 	}
-	fmt.Printf("Configuration is %#v", config)
 
-	dbConfig := config.DB
-
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password, dbConfig.Dbname)
-	conn, err := sql.Open("postgres", psqlInfo)
+	conn, err := sql.Open("postgres", DSN)
 	if err != nil {
 		t.Fatalf("could not establish db connection: %v", err)
 	}
+
 	return repository.New(conn)
 }
