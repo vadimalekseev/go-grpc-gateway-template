@@ -1,4 +1,4 @@
-db:
+services:
   image: postgres
   restart: always
   environment:
