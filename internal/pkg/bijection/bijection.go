@@ -9,8 +9,10 @@ import (
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNIPQRSTUVWXYZ0123456789"
 const base = len(alphabet)
 
-func Encode(toEncode int) (encoded string){
-	if toEncode == 0 {	return string(alphabet[0])	}
+func Encode(toEncode int) (encoded string) {
+	if toEncode == 0 {
+		return string(alphabet[0])
+	}
 
 	for toEncode > 0 {
 		encoded = encoded + string(alphabet[toEncode%base])
@@ -26,6 +28,3 @@ func Decode(encoded string) (decoded int) {
 	}
 	return
 }
-
-
-

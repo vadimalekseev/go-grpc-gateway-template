@@ -1,5 +1,6 @@
-# Confogurations
-*.hcl
+# Configurations
+configs/*.hcl
+!configs/app.example.hcl
 
 # Additional
 bin/

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/go-sink/sink/internal/app/datasctruct"
+	"github.com/go-sink/sink/internal/app/datastruct"
 )
 
 type Repository struct {
@@ -26,6 +26,6 @@ func (r *Repository) GetLink(short string) (original datastruct.Link) {
 }
 
 func (r *Repository) SetLink(link datastruct.Link) (err error) {
-	_, err = r.database.Query("INSERT INTO links VALUES (?, ?)", link.Original, link.Shortened)
+	_, err = r.database.Query("INSERT INTO links(original, shortened) VALUES ($1, $2)", link.Original, link.Shortened)
 	return
 }
