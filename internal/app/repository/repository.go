@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/go-sink/sink/internal/app/datastruct"
 )
@@ -15,13 +14,9 @@ func New(db *sql.DB) Repository {
 	return Repository{database: db}
 }
 
-func (r *Repository) GetLink(short string) (original datastruct.Link) {
-	originalRow := r.database.QueryRow("SELECT * from links where shortened ==  ?", short)
-	err := originalRow.Scan(&original)
-	if err != nil {
-		fmt.Printf("corresponding link was not found: %v", err)
-	}
-
+func (r *Repository) GetLink(short string) (original datastruct.Link, err error) {
+	originalRow := r.database.QueryRow("SELECT id, original, shortened from links where shortened = $1", short)
+	err = originalRow.Scan(&original.ID, &original.Original, &original.Shortened)
 	return
 }
 
