@@ -14,7 +14,7 @@ import (
 )
 
 func TestRepository(t *testing.T) {
-	linkRepository := setUpLinkRepository(t)
+	linkRepository := setUpTestLinkRepository(t)
 
 	const origTestValue = "orig"
 	const shortTestValue = "short"
@@ -44,7 +44,7 @@ func TestRepository(t *testing.T) {
 	})
 }
 
-func setUpLinkRepository(t testing.TB) (linkRepository Repository) {
+func setUpTestLinkRepository(t testing.TB) (linkRepository Repository) {
 	t.Helper()
 
 	DSN, ok := os.LookupEnv("TEST_DSN")
