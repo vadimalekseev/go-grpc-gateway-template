@@ -6,10 +6,23 @@ import (
 	aux "github.com/go-sink/sink/internal/pkg"
 )
 
-const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNIPQRSTUVWXYZ0123456789"
-const base = len(alphabet)
+type EncodingAlgorithm interface {
+	Encode(rune) string
+	Decode(string) rune
+}
 
-func Encode(toEncode int) (encoded string) {
+type numberSystemConverter struct {
+
+}
+
+func NewNumberSystemConverter() *numberSystemConverter {
+	return &numberSystemConverter{}
+}
+
+const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNIPQRSTUVWXYZ0123456789"
+const base = rune(len(alphabet))
+
+func (n *numberSystemConverter) Encode(toEncode rune) (encoded string) {
 	if toEncode == 0 {
 		return string(alphabet[0])
 	}
@@ -22,9 +35,9 @@ func Encode(toEncode int) (encoded string) {
 	return aux.Reverse(encoded)
 }
 
-func Decode(encoded string) (decoded int) {
+func (n *numberSystemConverter) Decode(encoded string) (decoded rune) {
 	for _, char := range encoded {
-		decoded = (decoded * base) + strings.Index(alphabet, string(char))
+		decoded = (decoded * base) + rune(strings.Index(alphabet, string(char)))
 	}
 	return
 }
