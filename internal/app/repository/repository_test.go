@@ -1,7 +1,10 @@
+//go:build integration
 // +build integration
+
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -22,7 +25,7 @@ func TestRepository(t *testing.T) {
 	t.Run("it writes a link to a database", func(t *testing.T) { //TODO: delete this
 		link := datastruct.Link{Original: origTestValue, Shortened: shortTestValue}
 
-		err := linkRepository.SetLink(link)
+		err := linkRepository.SetLink(context.Background(), link)
 		if err != nil {
 			t.Fatalf("couldnt write a link to a database: %v", err)
 		}
@@ -32,7 +35,7 @@ func TestRepository(t *testing.T) {
 		want := datastruct.Link{ID: 5, Original: origTestValue, Shortened: shortTestValue}
 		encodedLink := shortTestValue
 
-		got, err := linkRepository.GetLink(encodedLink)
+		got, err := linkRepository.GetLink(context.Background(), encodedLink)
 		assert.Nil(t, err)
 
 		// because we don't know ID for sure
