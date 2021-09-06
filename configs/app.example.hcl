@@ -3,5 +3,13 @@ database {
   port = 5432
   user = "postgres"
   password = "postgres"
-  dbname = "go-sink-db"
+  database = "go-sink"
+  sslmode = "disable"
+}
+
+app {
+  domain = "example.com"
+
+  httpAddr = ":5555"
+  grpcAddr = ":5556"
 }
