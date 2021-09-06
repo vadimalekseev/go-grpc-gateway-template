@@ -10,12 +10,14 @@ service Sink {
   rpc Sink(SinkRequest) returns (SinkResponse) {
     option (google.api.http) = {
       post: "/sink"
+      body: "*"
     };
   }
 
   rpc Unsink(UnsinkRequest) returns (UnsinkResponse) {
     option (google.api.http) = {
       post: "/unsink"
+      body: "*"
     };
   }
 }

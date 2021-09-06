@@ -8,6 +8,13 @@ import (
 
 type Config struct {
 	Database Database `hcl:"database,block"`
+	App App `hcl:"app,block"`
+}
+
+type App struct {
+	Domain string `hcl:"app"`
+	HTTPAddr string `hcl:"httpAddr"`
+	GRPCAddr string `hcl:"grpcAddr"`
 }
 
 type Database struct {
@@ -15,15 +22,16 @@ type Database struct {
 	Port     int    `hcl:"port"`
 	User     string `hcl:"user"`
 	Password string `hcl:"password"`
-	DBName   string `hcl:"dbname"`
+	Database string `hcl:"database"`
+	SSLMode  string `hcl:"sslmode"`
 }
 
-func Parse(bs []byte) (*Config, error) {
+func Parse(bs []byte) (Config, error) {
 	result := &Config{}
 
 	if err := hcl.Unmarshal(bs, result); err != nil {
-		return nil, fmt.Errorf("error parsing config: %v", err)
+		return *result, fmt.Errorf("error parsing config: %v", err)
 	}
 
-	return result, nil
+	return *result, nil
 }

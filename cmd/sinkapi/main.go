@@ -2,68 +2,51 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	_ "embed"
 	"flag"
-	"fmt"
+	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
+	"os/signal"
 
 	_ "github.com/lib/pq"
 
-	"github.com/go-sink/sink/internal/app/handler"
-	"github.com/go-sink/sink/internal/app/repository"
-	"github.com/go-sink/sink/internal/app/service"
-	"github.com/go-sink/sink/internal/pkg/bijection"
+	"github.com/go-sink/sink/internal/app/config"
+	"github.com/go-sink/sink/internal/app/server"
 )
 
-var httpAddr = flag.String("http-addr", ":8081", "http server addr")
-
-func setUpTempdb(driver string) *sql.DB { //TODO:change it
-	DSN, ok := os.LookupEnv("DSN")
-	if !ok {
-		fmt.Println("DSN environment variable is required")
-	}
-
-	conn, err := sql.Open(driver, DSN)
-	if err != nil {
-
-	}
-
-	return conn
-}
-
-var (
-	algorithm = bijection.NewNumberSystemConverter()
-	linkRepository = repository.New(setUpTempdb("postgres"))
-	encoder = service.NewEncoder(algorithm, &linkRepository, "somedomain")
-	server = handler.NewServer(encoder)
-)
-
-func run() error {
-	_, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	mux := http.NewServeMux()
-	go func(mux *http.ServeMux) {
-		if err := handler.ServeGRPC(mux, server); err != nil {
-			log.Fatalln(err)
-		}
-	}(mux)
-
-	if err := handler.ServeSwaggerUI(mux); err != nil {
-		return err
-	}
-
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(*httpAddr, mux)
-}
+var configPath = flag.String("config", "configs/app.develop.hcl", "application config")
 
 func main() {
 	flag.Parse()
 
-	if err := run(); err != nil {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	cfgBytes, err := ioutil.ReadFile(*configPath)
+	if err != nil {
 		log.Fatalln(err)
 	}
+
+	cfg, err := config.Parse(cfgBytes)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	app, err := server.InitApp(ctx, cfg)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if err = app.Run(); err != nil {
+		log.Fatalln(err)
+	}
+
+	shutdownCh := make(chan os.Signal, 1)
+	signal.Notify(shutdownCh)
+
+	sig := <-shutdownCh
+
+	cancel()
+
+	log.Fatalf("exit reason: %s\n", sig)
 }

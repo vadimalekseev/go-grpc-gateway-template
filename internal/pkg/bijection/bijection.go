@@ -6,11 +6,6 @@ import (
 	aux "github.com/go-sink/sink/internal/pkg"
 )
 
-type EncodingAlgorithm interface {
-	Encode(rune) string
-	Decode(string) rune
-}
-
 type numberSystemConverter struct {
 
 }

@@ -33,6 +33,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/sinkSinkRequest"
+            }
+          }
+        ],
         "tags": [
           "Sink"
         ]
@@ -55,6 +65,16 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/sinkUnsinkRequest"
+            }
+          }
+        ],
         "tags": [
           "Sink"
         ]
@@ -92,7 +112,28 @@
         }
       }
     },
+    "sinkSinkRequest": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "accessCount": {
+          "type": "string",
+          "format": "int64",
+          "description": "the number of accesses to the link."
+        }
+      }
+    },
     "sinkSinkResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "sinkUnsinkRequest": {
       "type": "object",
       "properties": {
         "url": {
