@@ -1,5 +1,5 @@
 LOCAL_BIN := $(CURDIR)/bin
-THIRD_PARTY_FOLDER := $(CURDIR)/third_party
+SWAGGER_FOLDER := $(CURDIR)/swagger/swagger-ui
 SWAGGER_URL := /swagger.json
 
 GOLANGCI_LINT_VER=v1.42.1
@@ -41,8 +41,8 @@ download-swagger:
 	tmp=$$(mktemp -d) && \
 	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
 	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
-	mkdir -p $(THIRD_PARTY_FOLDER)/swagger-ui && \
-	mv $$tmp/dist/* $(THIRD_PARTY_FOLDER)/swagger-ui && \
+	mkdir -p $(SWAGGER_FOLDER)/swagger-ui && \
+	mv $$tmp/dist/* $(SWAGGER_FOLDER)/swagger-ui && \
 	rm -rf $$tmp
 
 .PHONY: generate

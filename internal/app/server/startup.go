@@ -2,11 +2,11 @@ package server
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
@@ -31,17 +31,9 @@ func InitApp(ctx context.Context, config config.Config) (*Server, error) {
 		grpcAddr: config.App.GRPCAddr,
 	}
 
-	// set up database
-	dbcfg := config.Database
-
-	dsn := fmt.Sprintf("user=%s password=%s database=%s sslmode=%s", dbcfg.User, dbcfg.Password, dbcfg.Database, dbcfg.SSLMode)
-	db, err := sql.Open("postgres", dsn)
+	db, err := setUpDb(config.Database)
 	if err != nil {
-		return nil, fmt.Errorf("error opening database connection: %s", err)
-	}
-
-	if err = db.Ping(); err != nil {
-		return nil, fmt.Errorf("db ping error: %s", err)
+		return nil, fmt.Errorf("error set up database: %s", err)
 	}
 
 	repo := repository.New(db)
@@ -79,7 +71,7 @@ func (s Server) Run() error {
 
 	errWg.Go(func() error {
 		swaggerAddr := s.httpAddr + swaggerUIPrefix
-		fmt.Printf("App started. HTTP: %s, Swagger UI: %s, gRPC: %s\n", s.httpAddr, swaggerAddr, s.grpcAddr)
+		log.Info().Msgf("App started. HTTP: %s, Swagger UI: %s, gRPC: %s\n", s.httpAddr, swaggerAddr, s.grpcAddr)
 		return nil
 	})
 

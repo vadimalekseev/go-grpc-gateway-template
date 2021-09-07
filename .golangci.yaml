@@ -5,7 +5,7 @@ run:
   tests: true
   skip-dirs:
     - bin
-    - third_party
+    - swagger/swagger-ui
     - var
     - tmp
   skip-files:
