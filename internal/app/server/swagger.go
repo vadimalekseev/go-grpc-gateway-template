@@ -6,7 +6,7 @@ import (
 	"mime"
 	"net/http"
 
-	"github.com/go-sink/sink"
+	"github.com/aleksvdim/go-grpc-gateway-template"
 )
 
 const swaggerUIPrefix = "/docs/"
@@ -17,13 +17,13 @@ func serveSwaggerUI(mux *http.ServeMux) error {
 	}
 
 	// Expose files on <host>/docs
-	swaggerUIFS, err := fs.Sub(sink.SwaggerUI, sink.SwaggerUIPath)
+	swaggerUIFS, err := fs.Sub(template.ThirdParty, template.SwaggerUIPath)
 	if err != nil {
 		return err
 	}
 
 	mux.HandleFunc("/swagger.json", func(w http.ResponseWriter, _ *http.Request) {
-		if _, err = w.Write(sink.SinkSwaggerJSON); err != nil {
+		if _, err = w.Write(template.EchoAPISwaggerJSON); err != nil {
 			log.Printf("error writing swagger.json file: %v", err)
 		}
 	})

@@ -7,6 +7,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=go-sink
+      - POSTGRES_DB=postgres
     ports:
-      - 5432:5432
+      - "5432:5432"

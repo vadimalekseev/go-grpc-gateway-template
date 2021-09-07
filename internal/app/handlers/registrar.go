@@ -6,22 +6,24 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 
-	pb "github.com/go-sink/sink/pkg/api/sink"
+	"github.com/aleksvdim/go-grpc-gateway-template/pkg/api/echo"
 )
 
 type Registrar struct {
-	sinkServer pb.SinkServer
+	echoServer echo.EchoServer
 }
 
-func NewRegistrar(sink pb.SinkServer) Registrar {
+func NewRegistrar(echo echo.EchoServer) Registrar {
 	return Registrar{
-		sinkServer: sink,
+		echoServer: echo,
 	}
 }
 
 func (r Registrar) RegisterHandlers(ctx context.Context, grpcServer *grpc.Server, wgMux *runtime.ServeMux) error {
-	pb.RegisterSinkServer(grpcServer, r.sinkServer)
-	err := pb.RegisterSinkHandlerServer(ctx, wgMux, r.sinkServer)
+	// register gRPC
+	echo.RegisterEchoServer(grpcServer, r.echoServer)
+	// register gRPC Gateway
+	err := echo.RegisterEchoHandlerServer(ctx, wgMux, r.echoServer)
 	if err != nil {
 		return err
 	}
