@@ -2,31 +2,15 @@ LOCAL_BIN := $(CURDIR)/bin
 SWAGGER_FOLDER := $(CURDIR)/swagger/swagger-ui
 SWAGGER_URL := /swagger.json
 
-GOLANGCI_LINT_VER=v1.42.1
+GOLANGCI_LINT_VER=1.42.1
+GOOSE_VER=3.1.0
+PROTOC_GEN_GRPC_GATEWAY_VER=2.5.0
+PROTOC_GEN_OPENAPIV2_VER=2.5.0
+PROTOC_GEN_GO_VER=1.27.1
+PROTOC_GEN_GO_GRPC_VER=1.1.0
+BUF_VER=0.54.1
 
 export GOBIN=$(LOCAL_BIN)
-
-.PHONY: .install-protoc-deps
-.install-protoc-deps:
-	$(info Downloading protoc plugins)
-	go mod tidy
-	go install \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
-    google.golang.org/protobuf/cmd/protoc-gen-go \
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
-	github.com/bufbuild/buf/cmd/buf
-
-.PHONY: .install-golangci-lint
-.install-golangci-lint:
-	$(info Downloading golangci-lint)
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VER)
-
-.PHONY: .goose
-.goose:
-	$(info Downloading goose)
-	go mod tidy
-	go install github.com/pressly/goose/v3/cmd/goose
 
 .PHONY: bin-deps
 bin-deps: .install-protoc-deps .goose .install-golangci-lint
@@ -35,22 +19,12 @@ bin-deps: .install-protoc-deps .goose .install-golangci-lint
 buf-build:
 	"$(LOCAL_BIN)/buf" build
 
-.PHONY: download-swagger
-download-swagger:
-	$(info Downloading swagger-ui)
-	tmp=$$(mktemp -d) && \
-	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
-	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
-	mkdir -p $(SWAGGER_FOLDER)/swagger-ui && \
-	mv $$tmp/dist/* $(SWAGGER_FOLDER)/swagger-ui && \
-	rm -rf $$tmp
-
 .PHONY: generate
-generate: buf-build download-swagger
+generate: buf-build
 	PATH=$(LOCAL_BIN):$$PATH $(LOCAL_BIN)/buf generate
 
 .PHONY: build
-build: download-swagger
+build: .download-swagger
 	$(info Building app)
 	go build -o $$GOBIN/echoapi cmd/echoapi/main.go
 
@@ -74,3 +48,32 @@ test-integration:
 lint:
 	$(LOCAL_BIN)/golangci-lint run --config .golangci.yaml
 	$(LOCAL_BIN)/buf lint
+
+.PHONY: .install-protoc-deps
+.install-protoc-deps:
+	$(info Downloading protoc plugins)
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v$(PROTOC_GEN_GRPC_GATEWAY_VER)
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v$(PROTOC_GEN_OPENAPIV2_VER)
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v$(PROTOC_GEN_GO_VER)
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v$(PROTOC_GEN_GO_GRPC_VER)
+	go install github.com/bufbuild/buf/cmd/buf@v$(BUF_VER)
+
+.PHONY: .install-golangci-lint
+.install-golangci-lint:
+	$(info Downloading golangci-lint)
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v$(GOLANGCI_LINT_VER)
+
+.PHONY: .goose
+.goose:
+	$(info Downloading goose)
+	go install github.com/pressly/goose/v3/cmd/goose@v$(GOOSE_VER)
+
+.PHONY: .download-swagger
+.download-swagger:
+	$(info Downloading swagger-ui)
+	tmp=$$(mktemp -d) && \
+	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
+	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
+	mkdir -p $(SWAGGER_FOLDER)/swagger-ui && \
+	mv $$tmp/dist/* $(SWAGGER_FOLDER)/swagger-ui && \
+	rm -rf $$tmp
