@@ -1,12 +1,12 @@
 package server
 
 import (
-	"io/fs"
-	"log"
 	"mime"
 	"net/http"
 
-	template "github.com/aleksvdim/go-grpc-gateway-template"
+	"github.com/rs/zerolog/log"
+
+	"github.com/aleksvdim/go-grpc-gateway-template/swagger"
 )
 
 const swaggerUIPrefix = "/docs/"
@@ -17,17 +17,13 @@ func serveSwaggerUI(mux *http.ServeMux) error {
 	}
 
 	// Expose files on <host>/docs/
-	swaggerUIFS, err := fs.Sub(template.ThirdParty, template.SwaggerUIPath)
-	if err != nil {
-		return err
-	}
-
 	mux.HandleFunc("/swagger.json", func(w http.ResponseWriter, _ *http.Request) {
-		if _, err = w.Write(template.EchoAPISwaggerJSON); err != nil {
-			log.Printf("error writing swagger.json file: %v", err)
+		if _, err := w.Write(swagger.GetEchoSwaggerJSON()); err != nil {
+			log.Err(err).Msg("error writing swagger.json file: %v")
 		}
 	})
-	mux.Handle(swaggerUIPrefix, http.StripPrefix(swaggerUIPrefix, http.FileServer(http.FS(swaggerUIFS))))
+
+	mux.Handle(swaggerUIPrefix, http.StripPrefix(swaggerUIPrefix, http.FileServer(http.FS(swagger.GetSwaggerUI()))))
 
 	return nil
 }

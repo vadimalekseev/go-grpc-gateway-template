@@ -4,7 +4,7 @@ configs/*.hcl
 
 # Additional
 bin/
-third_party/
+swagger/swagger-ui
 
 # IDE
 .idea/
