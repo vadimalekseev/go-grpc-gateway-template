@@ -4,9 +4,10 @@ import (
 	"context"
 	_ "embed"
 	"flag"
-	"log"
 	"os"
 	"os/signal"
+
+	"github.com/rs/zerolog/log"
 
 	_ "github.com/lib/pq"
 
@@ -23,16 +24,16 @@ func main() {
 
 	cfg, err := config.FromFile(*configPath)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal().Err(err).Msg("read config file error")
 	}
 
 	app, err := server.InitApp(ctx, cfg)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal().Err(err).Msg("app init error")
 	}
 
 	if err = app.Run(); err != nil {
-		log.Fatalln(err)
+		log.Fatal().Err(err).Msg("app run error")
 	}
 
 	shutdownCh := make(chan os.Signal, 1)
@@ -42,5 +43,5 @@ func main() {
 
 	cancel()
 
-	log.Fatalf("exit reason: %s\n", sig)
+	log.Fatal().Msgf("exit reason: %s", sig)
 }
