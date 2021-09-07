@@ -3,7 +3,7 @@ database {
   port = 5432
   user = "postgres"
   password = "postgres"
-  database = "go-sink"
+  database = "postgres"
   sslmode = "disable"
 }
 

@@ -11,11 +11,11 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/go-sink/sink/internal/app/config"
-	"github.com/go-sink/sink/internal/app/server"
+	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/config"
+	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/server"
 )
 
-var configPath = flag.String("config", "configs/app.develop.hcl", "application config")
+var configPath = flag.String("config", "configs/app.example.hcl", "application config")
 
 func main() {
 	flag.Parse()

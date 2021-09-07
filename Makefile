@@ -44,5 +44,5 @@ generate: buf-build download-swagger
 
 .PHONY: build
 build: download-swagger
-	$(info Building sinkapi)
-	go build -o $$GOBIN/sinkapi cmd/sinkapi/main.go
+	$(info Building app)
+	go build -o $$GOBIN/echoapi cmd/echoapi/main.go

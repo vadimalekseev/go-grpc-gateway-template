@@ -1,5 +1,3 @@
-//go:build integration
-// +build integration
 
 package repository
 
@@ -13,37 +11,20 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/go-sink/sink/internal/app/datastruct"
+	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/datastruct"
 )
 
 func TestRepository(t *testing.T) {
 	linkRepository := setUpTestLinkRepository(t)
 
-	const origTestValue = "orig"
-	const shortTestValue = "short"
+	const echoValue = "hello!"
 
-	t.Run("it writes a link to a database", func(t *testing.T) { //TODO: delete this
-		link := datastruct.Link{Original: origTestValue, Shortened: shortTestValue}
+	t.Run("get echo from db", func(t *testing.T) {
+		expected := datastruct.Echo{Message: echoValue}
 
-		err := linkRepository.SetLink(context.Background(), link)
-		if err != nil {
-			t.Fatalf("couldnt write a link to a database: %v", err)
-		}
-	})
-
-	t.Run("it gets corresponding link", func(t *testing.T) {
-		want := datastruct.Link{ID: 5, Original: origTestValue, Shortened: shortTestValue}
-		encodedLink := shortTestValue
-
-		got, err := linkRepository.GetLink(context.Background(), encodedLink)
+		echo, err := linkRepository.GetEcho(context.Background(), echoValue)
 		assert.Nil(t, err)
-
-		// because we don't know ID for sure
-		got.ID = 5
-
-		if got != want {
-			assert.Equal(t, want, got)
-		}
+		assert.Equal(t, expected, echo)
 	})
 }
 

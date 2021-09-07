@@ -10,12 +10,10 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
-	"github.com/go-sink/sink/internal/app/config"
-	"github.com/go-sink/sink/internal/app/handlers"
-	"github.com/go-sink/sink/internal/app/handlers/sinkapi"
-	"github.com/go-sink/sink/internal/app/repository"
-	"github.com/go-sink/sink/internal/app/service"
-	"github.com/go-sink/sink/internal/pkg/bijection"
+	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/config"
+	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/handlers"
+	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/handlers/echoapi"
+	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/repository"
 )
 
 type Server struct {
@@ -41,11 +39,10 @@ func InitApp(ctx context.Context, config config.Config) (*Server, error) {
 	}
 
 	repo := repository.New(db)
-	urlEncoder := service.NewEncoder(bijection.NewNumberSystemConverter(), repo, config.App.Domain)
 
-	sinkAPIHandler := sinkapi.New(urlEncoder)
+	echoAPI := echoapi.New(repo)
 
-	s.registrar = handlers.NewRegistrar(sinkAPIHandler)
+	s.registrar = handlers.NewRegistrar(echoAPI)
 
 	if err = s.initTransport(ctx); err != nil {
 		return nil, fmt.Errorf("error initializing transport: %v", err)

@@ -1,6 +1,6 @@
 // +build tools
 
-package sink
+package template
 
 import (
 	_ "github.com/bufbuild/buf/cmd/buf"
