@@ -13,7 +13,7 @@ BUF_VER=0.54.1
 export GOBIN=$(LOCAL_BIN)
 
 .PHONY: deps
-deps: .install-protoc-deps .goose .install-golangci-lint .download-swagger
+deps: .install-protoc-deps .goose .install-golangci-lint download-swagger
 
 .PHONY: buf-build
 buf-build:
@@ -49,6 +49,18 @@ lint:
 	$(LOCAL_BIN)/golangci-lint run --config .golangci.yaml
 	$(LOCAL_BIN)/buf lint
 
+.PHONY: download-swagger
+download-swagger:
+ifeq (, $(wildcard swagger/swagger-ui))
+	$(info Downloading swagger-ui)
+	tmp=$$(mktemp -d) && \
+	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
+	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
+	mkdir -p $(SWAGGER_FOLDER)/swagger-ui && \
+	mv $$tmp/dist/* $(SWAGGER_FOLDER)/swagger-ui && \
+	rm -rf $$tmp
+endif
+
 .PHONY: .install-protoc-deps
 .install-protoc-deps:
 	$(info Downloading protoc plugins)
@@ -67,15 +79,3 @@ lint:
 .goose:
 	$(info Downloading goose)
 	go install github.com/pressly/goose/v3/cmd/goose@v$(GOOSE_VER)
-
-.PHONY: .download-swagger
-.download-swagger:
-ifeq (, $(wildcard swagger/swagger-ui))
-	$(info Downloading swagger-ui)
-	tmp=$$(mktemp -d) && \
-	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
-	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
-	mkdir -p $(SWAGGER_FOLDER)/swagger-ui && \
-	mv $$tmp/dist/* $(SWAGGER_FOLDER)/swagger-ui && \
-	rm -rf $$tmp
-endif
