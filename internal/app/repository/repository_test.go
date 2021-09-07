@@ -1,3 +1,4 @@
+// +build integration
 
 package repository
 
@@ -22,7 +23,7 @@ func TestRepository(t *testing.T) {
 	t.Run("get echo from db", func(t *testing.T) {
 		expected := datastruct.Echo{Message: echoValue}
 
-		echo, err := linkRepository.GetEcho(context.Background(), echoValue)
+		echo, err := linkRepository.Echo(context.Background(), echoValue)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, echo)
 	})

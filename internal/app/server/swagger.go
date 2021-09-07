@@ -6,7 +6,7 @@ import (
 	"mime"
 	"net/http"
 
-	"github.com/aleksvdim/go-grpc-gateway-template"
+	template "github.com/aleksvdim/go-grpc-gateway-template"
 )
 
 const swaggerUIPrefix = "/docs/"
@@ -16,7 +16,7 @@ func serveSwaggerUI(mux *http.ServeMux) error {
 		return err
 	}
 
-	// Expose files on <host>/docs
+	// Expose files on <host>/docs/
 	swaggerUIFS, err := fs.Sub(template.ThirdParty, template.SwaggerUIPath)
 	if err != nil {
 		return err

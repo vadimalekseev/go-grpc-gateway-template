@@ -1,4 +1,4 @@
-package template
+package go_grpc_gateway_template
 
 import (
 	"embed"
@@ -12,5 +12,5 @@ const SwaggerUIPath = "third_party/swagger-ui"
 var ThirdParty embed.FS
 
 // EchoAPISwaggerJSON embedded echo.swagger.json from echo.proto
-//go:embed pkg/api/echo/echo.swagger.json
+//go:embed pkg/echo/v1/echo.swagger.json
 var EchoAPISwaggerJSON []byte
