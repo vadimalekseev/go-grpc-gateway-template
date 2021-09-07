@@ -10,6 +10,6 @@ database {
 app {
   domain = "example.com"
 
-  httpAddr = ":5555"
-  grpcAddr = ":5556"
+  httpAddr = "127.0.0.1:5555"
+  grpcAddr = "127.0.0.1:5556"
 }

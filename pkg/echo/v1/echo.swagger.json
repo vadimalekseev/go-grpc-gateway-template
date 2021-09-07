@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "api/echo/echo.proto",
+    "title": "echo/v1/echo.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "Echo"
+      "name": "EchoService"
     }
   ],
   "consumes": [
@@ -18,12 +18,12 @@
   "paths": {
     "/echo": {
       "post": {
-        "operationId": "Echo_Echo",
+        "operationId": "EchoService_Echo",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/echoEchoResponse"
+              "$ref": "#/definitions/v1EchoResponse"
             }
           },
           "default": {
@@ -39,33 +39,17 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/echoEchoRequest"
+              "$ref": "#/definitions/v1EchoRequest"
             }
           }
         ],
         "tags": [
-          "Echo"
+          "EchoService"
         ]
       }
     }
   },
   "definitions": {
-    "echoEchoRequest": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
-        }
-      }
-    },
-    "echoEchoResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -93,6 +77,22 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "v1EchoRequest": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1EchoResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
         }
       }
     }

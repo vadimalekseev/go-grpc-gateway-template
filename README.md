@@ -1,15 +1,34 @@
 # go-grpc-gateway-template
 
-# Contribute
+## Requirements
 
-## Bin deps
+The project has been tested on Go 1.17. It uses some new features such as `go install`, `go:embed` (for third_party dependencies).
+Other binary dependencies will be downloaded to the `bin` folder.
 
-To download binary dependencies (e.g. proto-gen-go, goose) run make bin-deps.
+## First steps
 
-To run tests set up your database and run:
+### Binary dependencies
+
+To download binary dependencies (e.g. buf, proto-gen-go, goose) run `make bin-deps`.
+
+### Run tests
 
 ```bash
-export TEST_DSN=<your_connection_string> # example: "user=postgres password=postgres database=go-echo sslmode=disable"
-./bin/goose -dir migrations postgres $TEST_DSN up
-go test ./...
+# paste your connection string
+export DSN="user=postgres password=postgres database=postgres sslmode=disable"
+
+# run migrations
+GOOSE_DRIVER=postgres GOOSE_DBSTRING=$DSN make migrate
+
+# run tests
+make test
+
+# run integration tests
+make test-integration
 ``` 
+
+## Create migration
+
+```bash
+GOOSE_DRIVER=postgres GOOSE_DBSTRING="user=postgres password=postgres database=go-sink sslmode=disable" make migration
+```

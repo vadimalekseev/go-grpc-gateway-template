@@ -16,6 +16,7 @@ import (
 	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/repository"
 )
 
+// Server contains application dependencies.
 type Server struct {
 	httpAddr, grpcAddr string
 	grpcServer         *grpc.Server
@@ -23,6 +24,7 @@ type Server struct {
 	registrar          handlers.Registrar
 }
 
+// InitApp initializes handlers and transport.
 func InitApp(ctx context.Context, config config.Config) (*Server, error) {
 	s := &Server{
 		httpAddr: config.App.HTTPAddr,
@@ -38,10 +40,12 @@ func InitApp(ctx context.Context, config config.Config) (*Server, error) {
 		return nil, fmt.Errorf("error opening database connection: %s", err)
 	}
 
+	if err = db.Ping(); err != nil {
+		return nil, fmt.Errorf("db ping error: %s", err)
+	}
+
 	repo := repository.New(db)
-
 	echoAPI := echoapi.New(repo)
-
 	s.registrar = handlers.NewRegistrar(echoAPI)
 
 	if err = s.initTransport(ctx); err != nil {
@@ -51,6 +55,7 @@ func InitApp(ctx context.Context, config config.Config) (*Server, error) {
 	return s, nil
 }
 
+// Run starts the application.
 func (s Server) Run() error {
 	errWg := errgroup.Group{}
 
@@ -70,6 +75,12 @@ func (s Server) Run() error {
 		}
 
 		return s.httpServer.Serve(l)
+	})
+
+	errWg.Go(func() error {
+		swaggerAddr := s.httpAddr + swaggerUIPrefix
+		fmt.Printf("App started. HTTP: %s, Swagger UI: %s, gRPC: %s\n", s.httpAddr, swaggerAddr, s.grpcAddr)
+		return nil
 	})
 
 	return errWg.Wait()

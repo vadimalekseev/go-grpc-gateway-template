@@ -2,6 +2,8 @@ LOCAL_BIN := $(CURDIR)/bin
 THIRD_PARTY_FOLDER := $(CURDIR)/third_party
 SWAGGER_URL := /swagger.json
 
+GOLANGCI_LINT_VER=v1.42.1
+
 export GOBIN=$(LOCAL_BIN)
 
 .PHONY: .install-protoc-deps
@@ -15,6 +17,11 @@ export GOBIN=$(LOCAL_BIN)
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc \
 	github.com/bufbuild/buf/cmd/buf
 
+.PHONY: .install-golangci-lint
+.install-golangci-lint:
+	$(info Downloading golangci-lint)
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VER)
+
 .PHONY: .goose
 .goose:
 	$(info Downloading goose)
@@ -22,7 +29,7 @@ export GOBIN=$(LOCAL_BIN)
 	go install github.com/pressly/goose/v3/cmd/goose
 
 .PHONY: bin-deps
-bin-deps: .install-protoc-deps .goose
+bin-deps: .install-protoc-deps .goose .install-golangci-lint
 
 .PHONY: buf-build
 buf-build:
@@ -46,3 +53,24 @@ generate: buf-build download-swagger
 build: download-swagger
 	$(info Building app)
 	go build -o $$GOBIN/echoapi cmd/echoapi/main.go
+
+.PHONY: migration
+migration:
+	$(LOCAL_BIN)/goose -dir migrations create rename_me sql
+
+.PHONY: migrate
+migrate:
+	$(LOCAL_BIN)/goose -dir migrations up
+
+.PHONY: test
+test:
+	go test ./...
+
+.PHONY: test-integration
+test-integration:
+	go test ./... -tags integration
+
+.PHONY: lint
+lint:
+	$(LOCAL_BIN)/golangci-lint run --config .golangci.yaml
+	$(LOCAL_BIN)/buf lint

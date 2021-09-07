@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -22,12 +21,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	cfgBytes, err := ioutil.ReadFile(*configPath)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	cfg, err := config.Parse(cfgBytes)
+	cfg, err := config.FromFile(*configPath)
 	if err != nil {
 		log.Fatalln(err)
 	}
