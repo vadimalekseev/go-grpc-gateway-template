@@ -12,8 +12,8 @@ BUF_VER=0.54.1
 
 export GOBIN=$(LOCAL_BIN)
 
-.PHONY: bin-deps
-bin-deps: .install-protoc-deps .goose .install-golangci-lint
+.PHONY: deps
+deps: .install-protoc-deps .goose .install-golangci-lint .download-swagger
 
 .PHONY: buf-build
 buf-build:
@@ -38,11 +38,11 @@ migrate:
 
 .PHONY: test
 test:
-	go test ./...
+	go test -v -race ./...
 
 .PHONY: test-integration
 test-integration:
-	go test ./... -tags integration
+	go test -v -race ./... -tags integration
 
 .PHONY: lint
 lint:
@@ -70,6 +70,7 @@ lint:
 
 .PHONY: .download-swagger
 .download-swagger:
+ifeq (, $(wildcard swagger/swagger-ui))
 	$(info Downloading swagger-ui)
 	tmp=$$(mktemp -d) && \
 	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
@@ -77,3 +78,4 @@ lint:
 	mkdir -p $(SWAGGER_FOLDER)/swagger-ui && \
 	mv $$tmp/dist/* $(SWAGGER_FOLDER)/swagger-ui && \
 	rm -rf $$tmp
+endif

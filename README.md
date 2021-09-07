@@ -15,9 +15,17 @@ Other binary dependencies will be downloaded to the `bin` folder.
 
 ## First steps
 
-### Binary dependencies
+### Third party dependencies
 
-To download binary dependencies (e.g. buf, proto-gen-go, goose) run `make bin-deps`.
+To download third party dependencies (e.g. buf, proto-gen-go, goose, swagger UI) run `make deps`.
+
+### Build project
+
+Run `make build`. It will download swagger UI if it does not exist and build `echoapi/main.go` file.
+
+### Lint before commit 
+
+Run `make lint`. It will check *.proto files with [buf](https://buf.build/) and *.go files with golangci-lint
 
 ### Run tests
 
@@ -36,8 +44,29 @@ GOOSE_DRIVER=postgres GOOSE_DBSTRING=$DSN make migrate
 make test-integration
 ``` 
 
-## Create migration
+### Create migration
 
 ```bash
 GOOSE_DRIVER=postgres GOOSE_DBSTRING=$DSN make migration
 ```
+
+New migration will be added to migration folder. Do not forget rename it.
+
+### Apply migrations
+
+```bash
+GOOSE_DRIVER=postgres GOOSE_DBSTRING=$DSN make migrate
+```
+
+### Create new service
+
+* Add new service to `proto/echo/v1/echo.proto` file or add new proto file in proto folder.
+
+* Then run `make` - it will generate new *.pb.go files to pkg folder. See [generate code with buf](https://docs.buf.build/tour/generate-code) for more information
+
+## After fork
+
+1. Rename the name of the module in the go.mod file;
+2. Replace the default go_package_prefix with the new module name in buf.gen.yaml file;
+3. Fix badges references in README.md file;
+4. Change author in LICENSE file;
