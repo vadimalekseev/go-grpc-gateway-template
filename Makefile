@@ -13,7 +13,7 @@ BUF_VER=0.54.1
 export GOBIN=$(LOCAL_BIN)
 
 .PHONY: deps
-deps: .install-protoc-deps .goose .install-golangci-lint swagger-ui
+deps: .protoc-plugins .goose .golangci-lint swagger-ui
 
 .PHONY: buf-build
 buf-build:
@@ -61,8 +61,8 @@ ifeq (, $(wildcard swagger/swagger-ui))
 	rm -rf $$tmp
 endif
 
-.PHONY: .install-protoc-deps
-.install-protoc-deps:
+.PHONY: .protoc-plugins
+.protoc-plugins:
 	$(info Downloading protoc plugins)
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v$(PROTOC_GEN_GRPC_GATEWAY_VER)
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v$(PROTOC_GEN_OPENAPIV2_VER)
@@ -70,8 +70,8 @@ endif
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v$(PROTOC_GEN_GO_GRPC_VER)
 	go install github.com/bufbuild/buf/cmd/buf@v$(BUF_VER)
 
-.PHONY: .install-golangci-lint
-.install-golangci-lint:
+.PHONY: .golangci-lint
+.golangci-lint:
 	$(info Downloading golangci-lint)
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v$(GOLANGCI_LINT_VER)
 
