@@ -39,7 +39,7 @@ func setUpTestLinkRepository(t testing.TB) (linkRepository Repository) {
 
 	conn, err := sql.Open("postgres", DSN)
 	if err != nil {
-		t.Fatalf("could not establish db connection: %v", err)
+		t.Fatalf("could not establish db connection: %w", err)
 	}
 
 	return New(conn)

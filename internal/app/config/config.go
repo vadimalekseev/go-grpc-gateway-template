@@ -34,7 +34,7 @@ func Parse(bs []byte) (Config, error) {
 	result := &Config{}
 
 	if err := hcl.Unmarshal(bs, result); err != nil {
-		return *result, fmt.Errorf("error parsing config: %v", err)
+		return *result, fmt.Errorf("error parsing config: %w", err)
 	}
 
 	return *result, nil

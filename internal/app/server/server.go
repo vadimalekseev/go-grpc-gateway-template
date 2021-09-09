@@ -38,7 +38,7 @@ func InitApp(ctx context.Context, config config.Config) (*Server, error) {
 	s.registrar = handlers.NewRegistrar(echoAPI)
 
 	if err = s.initTransport(ctx); err != nil {
-		return nil, fmt.Errorf("error initializing transport: %v", err)
+		return nil, fmt.Errorf("error initializing transport: %w", err)
 	}
 
 	return s, nil
