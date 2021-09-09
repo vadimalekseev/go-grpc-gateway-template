@@ -4,8 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"flag"
-	"os"
-	"os/signal"
 
 	"github.com/rs/zerolog/log"
 
@@ -19,8 +17,7 @@ var configPath = flag.String("config", "configs/app.example.hcl", "application c
 
 func main() {
 	flag.Parse()
-
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx := context.Background()
 
 	cfg, err := config.FromFile(*configPath)
 	if err != nil {
@@ -32,16 +29,7 @@ func main() {
 		log.Fatal().Err(err).Msg("app init error")
 	}
 
-	if err = app.Run(); err != nil {
+	if err = app.Run(ctx); err != nil {
 		log.Fatal().Err(err).Msg("app run error")
 	}
-
-	shutdownCh := make(chan os.Signal, 1)
-	signal.Notify(shutdownCh)
-
-	sig := <-shutdownCh
-
-	cancel()
-
-	log.Fatal().Msgf("exit reason: %s", sig)
 }
