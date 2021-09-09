@@ -13,7 +13,7 @@ BUF_VER=0.54.1
 export GOBIN=$(LOCAL_BIN)
 
 .PHONY: deps
-deps: .install-protoc-deps .goose .install-golangci-lint download-swagger
+deps: .install-protoc-deps .goose .install-golangci-lint swagger-ui
 
 .PHONY: buf-build
 buf-build:
@@ -24,7 +24,7 @@ generate: buf-build
 	PATH=$(LOCAL_BIN):$$PATH $(LOCAL_BIN)/buf generate
 
 .PHONY: build
-build: .download-swagger
+build: swagger-ui
 	$(info Building app)
 	go build -o $$GOBIN/echoapi cmd/echoapi/main.go
 
@@ -49,8 +49,8 @@ lint:
 	$(LOCAL_BIN)/golangci-lint run --config .golangci.yaml
 	$(LOCAL_BIN)/buf lint
 
-.PHONY: download-swagger
-download-swagger:
+.PHONY: swagger-ui
+swagger-ui:
 ifeq (, $(wildcard swagger/swagger-ui))
 	$(info Downloading swagger-ui)
 	tmp=$$(mktemp -d) && \
