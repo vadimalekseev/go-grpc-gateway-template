@@ -1,6 +1,6 @@
 LOCAL_BIN := $(CURDIR)/bin
-SWAGGER_FOLDER := $(CURDIR)/swagger/swagger-ui
-SWAGGER_URL := /swagger.json
+SWAGGER_UI_FOLDER := $(CURDIR)/swagger/swagger-ui
+SWAGGER_URL := /docs/swagger.json
 
 GOLANGCI_LINT_VER=1.42.1
 GOOSE_VER=3.1.0
@@ -27,6 +27,11 @@ generate: buf-build
 build: swagger-ui
 	$(info Building app)
 	go build -o $$GOBIN/echoapi cmd/echoapi/main.go
+
+.PHONY: clean
+clean:
+	rm -rf $(SWAGGER_UI_FOLDER)
+	rm -rf bin
 
 .PHONY: migration
 migration:
@@ -56,8 +61,8 @@ ifeq (, $(wildcard swagger/swagger-ui))
 	tmp=$$(mktemp -d) && \
 	git clone --depth=1 https://github.com/swagger-api/swagger-ui.git $$tmp && \
 	sed -i -e "s|https://petstore.swagger.io/v2/swagger.json|${SWAGGER_URL}|g" $$tmp/dist/index.html && \
-	mkdir -p $(SWAGGER_FOLDER)/swagger-ui && \
-	mv $$tmp/dist/* $(SWAGGER_FOLDER)/swagger-ui && \
+	mkdir -p $(SWAGGER_UI_FOLDER) && \
+	mv $$tmp/dist/* $(SWAGGER_UI_FOLDER) && \
 	rm -rf $$tmp
 endif
 

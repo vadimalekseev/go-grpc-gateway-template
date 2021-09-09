@@ -3,13 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/http"
-	"os"
-	"os/signal"
 
-	"github.com/rs/zerolog/log"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 
 	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/config"
@@ -47,58 +42,4 @@ func InitApp(ctx context.Context, config config.Config) (*Server, error) {
 	}
 
 	return s, nil
-}
-
-// Run starts the application.
-func (s Server) Run(ctx context.Context) error {
-	ctx, cancel := context.WithCancel(context.Background())
-	errWg := errgroup.Group{}
-
-	errWg.Go(func() error {
-		lis, err := net.Listen("tcp", s.grpcAddr)
-		if err != nil {
-			return err
-		}
-
-		return s.grpcServer.Serve(lis)
-	})
-
-	errWg.Go(func() error {
-		l, err := net.Listen("tcp", s.httpAddr)
-		if err != nil {
-			return err
-		}
-
-		return s.httpServer.Serve(l)
-	})
-
-	errWg.Go(func() error {
-		swaggerAddr := s.httpAddr + swaggerUIPrefix
-		log.Info().Msgf("App started. HTTP: %s, Swagger UI: %s, gRPC: %s\n", s.httpAddr, swaggerAddr, s.grpcAddr)
-		return nil
-	})
-
-	errWg.Go(func() error {
-		shutdownCh := make(chan os.Signal, 1)
-		signal.Notify(shutdownCh)
-		sig := <-shutdownCh
-
-		s.Stop(ctx)
-		cancel()
-
-		log.Fatal().Msgf("exit reason: %s", sig)
-
-		return nil
-	})
-
-	return errWg.Wait()
-}
-
-// Stop the gRPC and HTTP servers.
-func (s Server) Stop(ctx context.Context) {
-	s.grpcServer.Stop()
-	err := s.httpServer.Shutdown(ctx)
-	if err != nil {
-		log.Err(err).Msg("error shutting down the http server")
-	}
 }
