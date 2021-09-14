@@ -17,7 +17,7 @@ jobs:
         run: make build
 
       - name: Test
-        run: go test -v -race ./...
+        run: make test
 
   golangci:
     name: lint
@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Generate third party files
-        run: make download-swagger
+        run: make swagger
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
