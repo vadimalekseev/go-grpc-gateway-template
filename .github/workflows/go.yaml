@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Generate third party files
-        run: make swagger
+        run: make swagger-ui
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
