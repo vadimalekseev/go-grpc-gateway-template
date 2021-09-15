@@ -8,6 +8,7 @@ import (
 // swaggerUI built files generating with `make generate` or `make download-swagger`.
 //go:embed swagger-ui
 var swaggerUI embed.FS
+
 const swaggerUISubPath = "swagger-ui"
 
 //go:embed echo/v1/echo.swagger.json
