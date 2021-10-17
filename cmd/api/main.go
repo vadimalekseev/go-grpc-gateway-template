@@ -24,7 +24,7 @@ func main() {
 		log.Fatal().Err(err).Msg("read config file error")
 	}
 
-	app, err := server.InitApp(ctx, cfg)
+	app, err := server.New(ctx, cfg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("app init error")
 	}

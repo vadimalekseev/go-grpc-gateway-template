@@ -1,15 +1,15 @@
 database {
-  host = "127.0.0.1"
-  port = 5432
-  user = "postgres"
+  host     = "127.0.0.1"
+  port     = 5432
+  user     = "postgres"
   password = "postgres"
   database = "postgres"
-  sslmode = "disable"
+  sslmode  = "disable"
 }
 
 app {
-  domain = "example.com"
-
-  httpAddr = "127.0.0.1:5555"
-  grpcAddr = "127.0.0.1:5556"
+  use_grpc_reflect = true
+  grpc_addr        = "127.0.0.1:5556"
+  http_addr        = "127.0.0.1:5555"
+  metrics_addr     = "/metrics"
 }

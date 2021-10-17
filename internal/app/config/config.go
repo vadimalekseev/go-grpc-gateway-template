@@ -15,8 +15,10 @@ type Config struct {
 
 // App config section.
 type App struct {
-	HTTPAddr string `hcl:"httpAddr"`
-	GRPCAddr string `hcl:"grpcAddr"`
+	HTTPAddr       string `hcl:"http_addr"`
+	GRPCAddr       string `hcl:"grpc_addr"`
+	MetricsAddr    string `hcl:"metrics_addr"`
+	UseGRPCReflect bool   `hcl:"use_grpc_reflect"`
 }
 
 // Database config section.

@@ -26,7 +26,7 @@ generate: buf-build
 .PHONY: build
 build: swagger-ui
 	$(info Building app)
-	go build -o $$GOBIN/echoapi cmd/echoapi/main.go
+	go build -o $$GOBIN/api cmd/api/main.go
 
 .PHONY: clean
 clean:

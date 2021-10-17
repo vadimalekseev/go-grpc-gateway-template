@@ -18,28 +18,29 @@ type Server struct {
 	httpAddr, grpcAddr string
 	grpcServer         *grpc.Server
 	httpServer         *http.Server
-	registrar          handlers.Registrar
 }
 
-// InitApp initializes handlers and transport.
-func InitApp(ctx context.Context, config config.Config) (*Server, error) {
+// New returns a new Server.
+func New(ctx context.Context, cfg config.Config) (*Server, error) {
 	s := &Server{
-		httpAddr: config.App.HTTPAddr,
-		grpcAddr: config.App.GRPCAddr,
+		httpAddr: cfg.App.HTTPAddr,
+		grpcAddr: cfg.App.GRPCAddr,
 	}
 
-	db, err := setUpDb(config.Database)
+	db, err := setUpDb(cfg.Database)
 	if err != nil {
-		return nil, fmt.Errorf("error set up database: %s", err)
+		return nil, fmt.Errorf("set up database: %s", err)
 	}
 
 	repo := repository.New(db)
 	echoAPI := echoapi.New(repo)
-	s.registrar = handlers.NewRegistrar(echoAPI)
 
-	if err = s.initTransport(ctx); err != nil {
-		return nil, fmt.Errorf("error initializing transport: %w", err)
+	registrar := handlers.NewRegistrar(echoAPI)
+
+	err = s.init(ctx, cfg.App, registrar)
+	if err != nil {
+		return nil, fmt.Errorf("init server: %s", err)
 	}
 
-	return s, nil
+	return s, err
 }
