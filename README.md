@@ -8,11 +8,6 @@
 
 * [![Release](https://img.shields.io/github/release/aleksvdim/go-grpc-gateway-template.svg?style=flat-square)](https://github.com/aleksvdim/go-grpc-gateway-template/releases/latest)
 
-## TODO
-
-* health check;
-* metrics
-
 ## Goal
 
 Bringing practices together when building yet another web service.
