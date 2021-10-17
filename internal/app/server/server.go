@@ -29,7 +29,7 @@ func New(ctx context.Context, cfg config.Config) (*Server, error) {
 
 	db, err := setUpDb(cfg.Database)
 	if err != nil {
-		return nil, fmt.Errorf("set up database: %s", err)
+		return nil, fmt.Errorf("set up database: %w", err)
 	}
 
 	repo := repository.New(db)
@@ -39,7 +39,7 @@ func New(ctx context.Context, cfg config.Config) (*Server, error) {
 
 	err = s.init(ctx, cfg.App, registrar)
 	if err != nil {
-		return nil, fmt.Errorf("init server: %s", err)
+		return nil, fmt.Errorf("init server: %w", err)
 	}
 
 	return s, err

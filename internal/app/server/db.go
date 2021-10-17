@@ -11,11 +11,11 @@ func setUpDb(dbCfg config.Database) (*sql.DB, error) {
 	dsn := fmt.Sprintf("user=%s password=%s database=%s sslmode=%s", dbCfg.User, dbCfg.Password, dbCfg.Database, dbCfg.SSLMode)
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("error opening database connection: %s", err)
+		return nil, fmt.Errorf("error opening database connection: %w", err)
 	}
 
 	if err = db.Ping(); err != nil {
-		return nil, fmt.Errorf("db ping error: %s", err)
+		return nil, fmt.Errorf("db ping: %w", err)
 	}
 
 	return db, nil

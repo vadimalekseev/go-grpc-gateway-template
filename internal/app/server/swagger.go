@@ -17,10 +17,11 @@ func serveSwaggerUI(mux *http.ServeMux) error {
 		return err
 	}
 
+	echoAPISwagger := swagger.GetEchoSwaggerJSON()
 	// Expose files on <host>/docs/
 	mux.HandleFunc(swaggerJSONPath, func(w http.ResponseWriter, _ *http.Request) {
-		if _, err := w.Write(swagger.GetEchoSwaggerJSON()); err != nil {
-			log.Err(err).Msg("error writing swagger.json file: %w")
+		if _, err := w.Write(echoAPISwagger); err != nil {
+			log.Err(err).Msg("write swagger.json file")
 		}
 	})
 

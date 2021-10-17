@@ -16,6 +16,7 @@ func (s Server) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	errWg := errgroup.Group{}
 
+	// run gRPC server
 	errWg.Go(func() error {
 		lis, err := net.Listen("tcp", s.grpcAddr)
 		if err != nil {
@@ -25,6 +26,7 @@ func (s Server) Run(ctx context.Context) error {
 		return s.grpcServer.Serve(lis)
 	})
 
+	// run HTTP server
 	errWg.Go(func() error {
 		l, err := net.Listen("tcp", s.httpAddr)
 		if err != nil {
@@ -40,6 +42,7 @@ func (s Server) Run(ctx context.Context) error {
 		return nil
 	})
 
+	// graceful shutdown
 	errWg.Go(func() error {
 		shutdownCh := make(chan os.Signal, 1)
 		signal.Notify(shutdownCh, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -61,6 +64,6 @@ func (s Server) stop(ctx context.Context) {
 	s.grpcServer.Stop()
 	err := s.httpServer.Shutdown(ctx)
 	if err != nil {
-		log.Err(err).Msg("error shutting down the http server")
+		log.Err(err).Msg("shutting down the http server")
 	}
 }

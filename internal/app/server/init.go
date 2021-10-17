@@ -23,7 +23,7 @@ func (s *Server) init(ctx context.Context, cfg config.App, registrar handlers.Re
 
 	grpcServer := grpc.NewServer(grpc.ConnectionTimeout(timeout))
 	if err = registrar.RegisterHandlers(ctx, grpcServer, gwMux); err != nil {
-		return fmt.Errorf("register handlers: %s", err)
+		return fmt.Errorf("register handlers: %w", err)
 	}
 
 	if cfg.UseGRPCReflect {
