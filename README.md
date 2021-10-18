@@ -12,11 +12,14 @@
 
 Bringing practices together when building yet another web service.
 
-## Example usage
+## About template
 
 Project contains echo server with PostgreSQL integration. It supports gRPC and HTTP transports 
 using [gRPC to JSON proxy generator](https://github.com/grpc-ecosystem/grpc-gateway). 
 Proto files generated with [buf](https://buf.build/). 
+Also, the template provides 
+`/health` ([liveness probe](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#when-should-you-use-a-liveness-probe)) 
+and `/metrics` (using [Prometheus](https://github.com/prometheus/client_golang)).
 
 ## Requirements
 
@@ -31,7 +34,7 @@ To download third party dependencies (e.g. buf, proto-gen-go, goose, Swagger UI)
 
 ### Build project
 
-Run `make build`. It will download Swagger UI if it does not exist and build `echoapi/main.go` file.
+Run `make build`. It will download Swagger UI if it does not exist and build `api/main.go` file.
 
 ### Lint before commit 
 
@@ -49,7 +52,7 @@ make test
 
 # Run integration tests
 # Paste your connection string. 
-# If you ran docker compose up, you can copy-paste the code below.
+# If you ran "docker compose up", you can copy-paste the code below.
 export DSN="user=postgres password=postgres database=postgres sslmode=disable" 
 
 # run migrations
