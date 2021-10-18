@@ -13,11 +13,20 @@ import (
 	"github.com/aleksvdim/go-grpc-gateway-template/internal/app/server"
 )
 
-var configPath = flag.String("config", "configs/app.example.hcl", "application config")
+const defaultConfig = "configs/app.example.hcl"
+
+var configPath = flag.String("config", defaultConfig, "application config")
 
 func main() {
 	flag.Parse()
 	ctx := context.Background()
+
+	if *configPath == defaultConfig {
+		log.Warn().Msgf(
+			"App uses the default config file (%s). To provide your own config use -config flag.",
+			defaultConfig,
+		)
+	}
 
 	cfg, err := config.FromFile(*configPath)
 	if err != nil {
