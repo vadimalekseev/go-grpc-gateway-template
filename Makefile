@@ -28,6 +28,10 @@ build: swagger-ui
 	$(info Building app)
 	go build -o $$GOBIN/api cmd/api/main.go
 
+.PHONY: run
+run:
+	go run cmd/api/main.go
+
 .PHONY: clean
 clean:
 	rm -rf $(SWAGGER_UI_FOLDER)

@@ -32,9 +32,15 @@ Other binary dependencies will be downloaded to the `bin` folder.
 
 To download third party dependencies (e.g. buf, proto-gen-go, goose, Swagger UI) run `make deps`.
 
-### Build project
+### Build
 
-Run `make build`. It will download Swagger UI if it does not exist and build `api/main.go` file.
+Use `make build` to build the application.
+It will download the [Swagger UI](https://github.com/swagger-api/swagger-ui) if it does not exist 
+and compile the application into the `bin` folder.
+
+### Run
+
+Use `make run` to run the application with default config.
 
 ### Lint before commit 
 
